@@ -1,0 +1,39 @@
+@baseUrl = http://localhost:8080
+
+###
+
+POST {{baseUrl}}/api/comments
+Content-Type: application/json
+
+  {
+    "id": "q11d2fd2-c2q9-4a60-b701-qc814fe1d6ce",
+    "content": "This was a bad task ever",
+    "taskId": "f10d8fd2-c2e9-4a60-b701-dc804fe1d6ce"
+  }
+
+//edit comments
+###
+
+PUT  {{baseUrl}}/api/comments/f10d2fd2-c2q9-4a60-b701-dc814fe1d6ce/status
+Content-Type: application/json
+
+  { 
+    "status": "COMPLETED"
+  }
+
+
+### get all comments
+GET {{baseUrl}}/api/tasks
+
+### get task by user id
+GET {{baseUrl}}/api/tasks/f10d8fd1-c2e9-4a60-b707-dc804fe3d6ce
+
+
+//delete a project
+###
+DELETE  {{baseUrl}}/api/projects/f10d8fd0-c2e9-4a60-b709-dc804fe1d6ce
+
+
+
+
+//2026-01-25

@@ -1,0 +1,41 @@
+@baseUrl = http://localhost:8080
+
+//id,title,description,status, priority, due_date, user_id, project_id
+###
+POST {{baseUrl}}/api/tasks
+Content-Type: application/json
+
+  {
+    "id": "f10d2fd2-c2q9-4a60-b701-dc814fe1d6ce",
+    "title": "facebook page",
+    "description": "Update our facebook content to better match what customers are searching for",
+    "status": "NEW",
+    "priority": "HIGH",
+    "dueDate": "2026-02-25",
+    "userId": "f10d8fd1-c2e9-4a60-b707-dc804fe3d6ce",
+    "projectId": "f10d8fd0-c2e9-4a60-b709-dc804fe1d6ce"
+  }
+
+### get all projects
+GET {{baseUrl}}/api/tasks
+
+### get task by user id
+GET {{baseUrl}}/api/tasks/f10d8fd1-c2e9-4a60-b707-dc804fe3d6ce
+
+
+//delete a project
+###
+DELETE  {{baseUrl}}/api/projects/f10d8fd0-c2e9-4a60-b709-dc804fe1d6ce
+
+
+###
+
+PUT  {{baseUrl}}/api/tasks/f10d2fd2-c2q9-4a60-b701-dc814fe1d6ce/status
+Content-Type: application/json
+
+  { 
+    "status": "COMPLETED"
+  }
+
+//2026-01-25
+

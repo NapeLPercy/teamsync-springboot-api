@@ -1,0 +1,27 @@
+ @baseUrl = http://localhost:8080
+
+
+###
+POST {{baseUrl}}/api/projects
+Content-Type: application/json
+
+  {
+    "id": "f10d8fd0-c2e9-4a60-b709-dc804fe1d6ce",
+    "name": "SEO trategies",
+    "description": "Optimizing our website for search engine search",
+    "userId": "f10d8fd1-c2e9-4a60-b707-dc804fe3d6ce"
+  }
+
+### get all projects
+GET {{baseUrl}}/api/projects
+
+### get project by id
+GET {{baseUrl}}/api/projects/f10d8fd0-c2e9-4a60-b709-dc804fe1d6ce
+
+
+//delete a project
+###
+DELETE  {{baseUrl}}/api/projects/f10d8fd0-c2e9-4a60-b709-dc804fe1d6ce
+
+
+//2026-01-25

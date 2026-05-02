@@ -1,0 +1,56 @@
+@baseUrl = http://localhost:63112
+
+
+###
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+  {
+    "id": "f10d8fd1-c2e9-4a60-b707-dc804fe3d6ce",
+    "email": "Lekoloanenape6639@gmail.com",
+    "password": "",
+    "fullName": "lEKOLOANE NAPE PERCY lol",
+    "role": "EMPLOYEE",
+    "isActive": true
+  }
+
+### get all users
+GET {{baseUrl}}/api/users
+
+### get by id
+GET {{baseUrl}}/api/users/f10d8fd1-c2e9-4a60-b707-dc804fe3d6ce
+
+//filter/search users
+### all users
+GET {{baseUrl}}/api/users/search?email=Lekoloanenape6@gmail.com
+
+### all users relative to email or active status
+GET {{baseUrl}}/api/users/search?isActive=true&email=Lekoloanenape6@gmail.com
+
+
+###
+PUT {{baseUrl}}/api/users/f17d8fd1-c2e1-4a60-b747-dc804fe3d6ce
+Content-Type: application/json
+
+  {
+    "id": "f17d8fd1-c2e1-4a60-b747-dc804fe3d6ce",
+    "email": "NeweBROBROmail@gmail.com",
+    "password": "Rosina^*20",
+    "fullName": "PERCY",
+    "role": "EMPLOYEE",
+    "isActive": false
+  }
+ 
+###
+DELETE  {{baseUrl}}/api/users/f17d8fd1-c2e1-4a60-b747-dc804fe3d6ce
+
+
+### change user password from temporary to custom
+PUT {{baseUrl}}/api/users/change-password
+Content-Type: application/json
+
+  {
+    "userId": "f10d8fd1-c2e9-4a60-b747-dc804fe3d6ce",
+    "newPassword": "NEWPPASS^*20"
+    
+  }

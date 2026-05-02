@@ -1,0 +1,15 @@
+@baseUrl = http://localhost:35729
+
+### Register
+POST {{baseUrl}}/api/auth/company
+Content-Type: application/json
+
+{
+  "name": "Acme Corp",
+  "companyId": "acme",
+  "fullName": "John Doe",
+  "email": "john@acme.com",
+  "password": "123456",
+  "status": "ACTIVE",
+  "role": "ADMIN"
+}
