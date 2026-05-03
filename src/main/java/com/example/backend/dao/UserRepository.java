@@ -18,8 +18,8 @@ public class UserRepository {
     // add user
     public int saveUser(User user) {
         return jdbcClient
-                .sql("INSERT INTO user(id, full_name) VALUES(?,?)")
-                .params(List.of(user.getId(), user.getFullName()))
+                .sql("INSERT INTO users(id, full_name,company_id) VALUES(?,?,?)")
+                .params(List.of(user.getId(), user.getFullName(), user.getCompanyId()))
                 .update();
     }
 

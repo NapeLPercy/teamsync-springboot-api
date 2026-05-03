@@ -52,6 +52,14 @@ public class User {
     public void setCompanyId(String companyId) {
         this.companyId = companyId;
     }
+
+    @Override
+    public String toString() {
+        return "User [id=" + id + ", fullName=" + fullName + ", role=" + role + ", isActive=" + isActive
+                + ", companyId=" + companyId + ", getId()=" + getId() + ", getFullName()=" + getFullName()
+                + ", isActive()=" + isActive() + ", getCompanyId()=" + getCompanyId() + ", getClass()=" + getClass()
+                + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+    }
  
 
 
