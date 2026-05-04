@@ -1,15 +1,25 @@
-@baseUrl = http://localhost:35729
+@baseUrl = http://localhost:8080 
 
 ### Register
-POST {{baseUrl}}/api/auth/company
+POST {{baseUrl}}/api/auth/employee
 Content-Type: application/json
 
 {
-  "name": "Acme Corp",
-  "companyId": "acme",
-  "fullName": "John Doe",
-  "email": "john@acme.com",
-  "password": "123456",
+  "name": "Absa",
+  "companyId": "bb22208b-9f33-4aa6-b642-9223c97f311d",
+  "fullName": "John Doe absa",
+ "email": "lekoloanenape5@gmail.com",
+  "password":"Rosina^*20",
   "status": "ACTIVE",
-  "role": "ADMIN"
+  "role": "EMPLOYEE"
+}
+
+
+### login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{ 
+  "email": "lekoloanenape5@gmail.com",
+  "password":"Rosina^*20"
 }

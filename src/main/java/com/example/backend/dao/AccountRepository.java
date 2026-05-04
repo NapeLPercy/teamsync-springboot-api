@@ -1,6 +1,6 @@
 package com.example.backend.dao;
 
-import java.util.List;
+import java.util.*;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -25,5 +25,13 @@ public class AccountRepository {
                         account.getStatus(),
                         account.getUserId()))
                 .update();
+    }
+
+    public Optional<Account> loginUser(String email) {
+
+        return jdbcClient.sql("SELECT password,email FROM account WHERE email=:email LIMIT 1")
+                .param("email",email)
+                .query(Account.class)
+                .optional();
     }
 }

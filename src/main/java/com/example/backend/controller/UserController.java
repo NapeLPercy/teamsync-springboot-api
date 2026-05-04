@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.service.annotation.DeleteExchange;
 
 import com.example.backend.dao.UserRepository;
+import com.example.backend.model.Account;
 import com.example.backend.model.User;
+import com.example.backend.service.LoginService;
 import com.example.backend.service.RegisterService;
 import com.example.backend.dto.RegisterRequest;
 import com.example.backend.dto.UserChangePassword;
@@ -26,9 +28,11 @@ import java.util.*;
 public class UserController {
 
     private final RegisterService registerService;
+    private final LoginService loginService;
 
-    public UserController(RegisterService registerService) {
+    public UserController(RegisterService registerService, LoginService loginService) {
         this.registerService = registerService;
+        this.loginService = loginService;
     }
 
     @PostMapping("/company")
@@ -39,6 +43,11 @@ public class UserController {
     @PostMapping("/employee")
     public void createEmployee(@RequestBody RegisterRequest req) {
         registerService.createEmployee(req);
+    }
+
+    @PostMapping("/login")
+    public void login(@RequestBody Account account) {
+        loginService.loginUser(account.getEmail(), account.getPassword());
     }
 
     /*

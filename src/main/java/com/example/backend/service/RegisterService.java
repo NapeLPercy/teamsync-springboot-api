@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,15 +16,18 @@ public class RegisterService {
     private CompanyRepository companyRepository;
     private UserRepository userRepository;
     private AccountRepository accountRepository;
-    private RoleRepository RoleRepository;
+    private RoleRepository roleRepository;
+
+    private PasswordEncoder passwordEncoder;
 
     public RegisterService(CompanyRepository companyRepository, UserRepository userRepository,
-            AccountRepository accountRepository, RoleRepository RoleRepository) {
+            AccountRepository accountRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
 
-        this.RoleRepository = RoleRepository;
+        this.roleRepository = roleRepository;
         this.accountRepository = accountRepository;
         this.companyRepository = companyRepository;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -37,13 +41,15 @@ public class RegisterService {
 
         User user = new User(userId.toString(), req.fullName(), companyId.toString());
 
-        Account account = new Account(accountId.toString(), req.email(), req.password(), req.status(),
+        String hashedPassword = passwordEncoder.encode(req.password());
+
+        Account account = new Account(accountId.toString(), req.email(), hashedPassword, req.status(),
                 userId.toString());
 
-        int saveCompanyResult = companyRepository.saveCompany(company);
-        int saveUserResult = userRepository.saveUser(user);
-        int saveAccountResult = accountRepository.saveAccount(account);
-        int saveRoleResult = RoleRepository.saveRole(roleId.toString(), req.role(), userId.toString());
+        companyRepository.saveCompany(company);
+        userRepository.saveUser(user);
+        accountRepository.saveAccount(account);
+        roleRepository.saveRole(roleId.toString(), req.role(), userId.toString());
 
     }
 
@@ -56,12 +62,14 @@ public class RegisterService {
 
         User user = new User(userId.toString(), req.fullName(), companyId);
 
-        Account account = new Account(accountId.toString(), req.email(), req.password(), req.status(),
+        String hashedPassword = passwordEncoder.encode(req.password());
+
+        Account account = new Account(accountId.toString(), req.email(), hashedPassword, req.status(),
                 userId.toString());
 
-        int saveUserResult = userRepository.saveUser(user);
-        int saveAccountResult = accountRepository.saveAccount(account);
-        int saveRoleResult = RoleRepository.saveRole(roleId.toString(), req.role(), userId.toString());
+        userRepository.saveUser(user);
+        accountRepository.saveAccount(account);
+        roleRepository.saveRole(roleId.toString(), req.role(), userId.toString());
 
     }
 
