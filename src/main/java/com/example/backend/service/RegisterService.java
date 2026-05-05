@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.backend.dao.*;
 import com.example.backend.dao.UserRepository;
 import com.example.backend.dto.RegisterRequest;
+import com.example.backend.exception.EmailAlreadyRegisteredException;
 import com.example.backend.model.*;
 import java.util.*;
 
@@ -31,7 +32,11 @@ public class RegisterService {
     }
 
     @Transactional
-    public void createCompany(RegisterRequest req) {
+    public UUID createCompany(RegisterRequest req) {
+        if (isEmailRegistered(req.email())) {
+            throw new EmailAlreadyRegisteredException("Email already registered");
+        }
+
         UUID companyId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         UUID accountId = UUID.randomUUID();
@@ -51,10 +56,14 @@ public class RegisterService {
         accountRepository.saveAccount(account);
         roleRepository.saveRole(roleId.toString(), req.role(), userId.toString());
 
+        return companyId;
     }
 
     @Transactional
-    public void createEmployee(RegisterRequest req) {
+    public UUID createEmployee(RegisterRequest req) {
+        if (isEmailRegistered(req.email())) {
+            throw new EmailAlreadyRegisteredException("Email already registered");
+        }
         String companyId = req.companyId();// taken from req
         UUID userId = UUID.randomUUID();
         UUID accountId = UUID.randomUUID();
@@ -71,6 +80,11 @@ public class RegisterService {
         accountRepository.saveAccount(account);
         roleRepository.saveRole(roleId.toString(), req.role(), userId.toString());
 
+        return userId;
+    }
+
+    private boolean isEmailRegistered(String email) {
+        return accountRepository.findAccountByEmail(email).isPresent();
     }
 
 }

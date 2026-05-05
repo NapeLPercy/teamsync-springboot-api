@@ -1,6 +1,8 @@
 package com.example.backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,18 +38,33 @@ public class UserController {
     }
 
     @PostMapping("/company")
-    public void createCompany(@RequestBody RegisterRequest req) {
-        registerService.createCompany(req);
+    public ResponseEntity<?> createCompany(@RequestBody RegisterRequest req) {
+        UUID companyId = registerService.createCompany(req);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
+                "message", "Company created successfully",
+                "success", true,
+                "data", companyId));
     }
 
     @PostMapping("/employee")
-    public void createEmployee(@RequestBody RegisterRequest req) {
-        registerService.createEmployee(req);
+    public ResponseEntity<?> createEmployee(@RequestBody RegisterRequest req) {
+        UUID userId = registerService.createEmployee(req);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
+                "message", "User Account created successfully",
+                "success", true,
+                "data", userId));
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody Account account) {
-        loginService.loginUser(account.getEmail(), account.getPassword());
+    public ResponseEntity<?> login(@RequestBody Account account) {
+
+        Account validAccount = loginService.loginUser(account.getEmail(), account.getPassword());
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
+                "message", "Successfully logged in",
+                "success", true,
+                "data", validAccount));
     }
 
     /*

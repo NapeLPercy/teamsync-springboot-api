@@ -27,10 +27,17 @@ public class AccountRepository {
                 .update();
     }
 
+    public Optional<String> findAccountByEmail(String email) {
+        return jdbcClient.sql("SELECT email FROM account WHERE email = :email")
+                .param("email", email)
+                .query(String.class)
+                .optional();
+    }
+
     public Optional<Account> loginUser(String email) {
 
         return jdbcClient.sql("SELECT password,email FROM account WHERE email=:email LIMIT 1")
-                .param("email",email)
+                .param("email", email)
                 .query(Account.class)
                 .optional();
     }

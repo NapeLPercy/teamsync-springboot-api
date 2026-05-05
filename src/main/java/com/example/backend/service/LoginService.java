@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.backend.dao.AccountRepository;
+import com.example.backend.exception.InvalidCredentialsException;
 import com.example.backend.model.*;
 
 @Service
@@ -18,19 +19,17 @@ public class LoginService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void loginUser(String email, String submittedPassword) {
+    public Account loginUser(String email, String submittedPassword) {
         Optional<Account> account = accountRepository.loginUser(email);
         if (account.isEmpty())
-            return;
-
-        boolean isValidUser = passwordEncoder.matches(submittedPassword, account.get().getPassword());
+            throw new InvalidCredentialsException("Invalid email or password");
 
         // compared saved password to subitted password
-        if (isValidUser) {
-            System.out.println("VAlid system user");
-        } else {
-            System.out.println("Not valid system user");
-        }
+        boolean isValidUser = passwordEncoder.matches(submittedPassword, account.get().getPassword());
+
+        if (!isValidUser)
+            throw new InvalidCredentialsException("Invalid email or password");
+        return account.get();
     }
 
 }
