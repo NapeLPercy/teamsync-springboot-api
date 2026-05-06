@@ -19,6 +19,7 @@ import com.example.backend.model.Account;
 import com.example.backend.model.User;
 import com.example.backend.service.LoginService;
 import com.example.backend.service.RegisterService;
+import com.example.backend.dto.LoginRequest;
 import com.example.backend.dto.RegisterRequest;
 import com.example.backend.dto.UserChangePassword;
 import com.example.backend.utils.PasswordManager;
@@ -59,8 +60,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Account account) {
 
-        Account validAccount = loginService.loginUser(account.getEmail(), account.getPassword());
-
+        LoginRequest validAccount = loginService.loginUser(account.getEmail(), account.getPassword());
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
                 "message", "Successfully logged in",
                 "success", true,

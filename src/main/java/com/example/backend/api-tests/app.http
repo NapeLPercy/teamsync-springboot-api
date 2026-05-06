@@ -1,15 +1,30 @@
 @baseUrl = http://localhost:8080 
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuYXBlQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3ODEwMzM3NCwiZXhwIjoxNzc4MTA2OTc0fQ.7aqyRWiVo_0qhTtrEOq87XYgHg-3JGPi6zyjdxEQANk
+### Register company account
+POST {{baseUrl}}/api/auth/company
+Content-Type: application/json
+
+{
+  "name": "Absa",
+  "fullName": "John Doe absa",
+  "email": "nape@gmail.com",
+  "password":"Rosina^*20",
+  "status": "ACTIVE",
+  "role": "ADMIN"
+}
+
 
 ### Register
 POST {{baseUrl}}/api/auth/employee
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "name": "Absa",
   "companyId": "bb22208b-9f33-4aa6-b642-9223c97f311d",
   "fullName": "John Doe absa",
- "email": "lekoloanenape5@gmail.com",
-  "password":"Rosina^*20",
+  "email": "percy@gmail.com",
+  "password": "Rosina^*20",
   "status": "ACTIVE",
   "role": "EMPLOYEE"
 }
@@ -20,6 +35,6 @@ POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
 { 
-  "email": "lekoloanenape5@gmail.com",
+  "email": "percy@gmail.com",
   "password":"Rosina^*20"
 }

@@ -10,6 +10,7 @@ public class Account {
     private String status;
     private LocalDateTime createdAt;
     private String userId;
+    private UserRole userRole;
 
     public Account() {
     }
@@ -70,4 +71,20 @@ public class Account {
         this.userId = userId;
     }
 
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
+    }
+
+    @Override
+    public String toString() {
+        return "Account [id=" + id + ", email=" + email + ", password=" + password + ", status=" + status
+                + ", createdAt=" + createdAt + ", userId=" + userId + ", userRole=" + userRole + ", getId()=" + getId()
+                + ", getEmail()=" + getEmail() + ", getPassword()=" + getPassword() + ", getStatus()=" + getStatus()
+                + ", getCreatedAt()=" + getCreatedAt() + ", getUserId()=" + getUserId() + ", getClass()=" + getClass()
+                + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+    }
 }

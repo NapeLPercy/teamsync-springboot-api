@@ -35,8 +35,17 @@ public class AccountRepository {
     }
 
     public Optional<Account> loginUser(String email) {
-
-        return jdbcClient.sql("SELECT password,email FROM account WHERE email=:email LIMIT 1")
+        return jdbcClient.sql("""
+                    SELECT
+                        a.id,
+                        a.email,
+                        a.password,
+                        ur.user_role
+                    FROM account a
+                    LEFT JOIN role ur ON ur.user_id = a.user_id
+                    WHERE a.email = :email
+                    LIMIT 1
+                """)
                 .param("email", email)
                 .query(Account.class)
                 .optional();
