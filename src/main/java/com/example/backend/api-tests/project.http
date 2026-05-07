@@ -1,15 +1,15 @@
  @baseUrl = http://localhost:8080
-
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZXJjeTFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwidXNlcklkIjoiZTliMzdiZjMtYjczZi00MzFhLTkxZDctYzM2YzYzMWIyYzllIiwiaWF0IjoxNzc4MTU5NDYwLCJleHAiOjE3NzgxNjMwNjB9.rDNYDkjk-0UVXGySsZ-ivtQ1AfntbmJXhpXEUUP9asc
 
 ###
-POST {{baseUrl}}/api/projects
+POST {{baseUrl}}/api/projects/admin/add
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
-  {
-    "id": "f10d8fd0-c2e9-4a60-b709-dc804fe1d6ce",
-    "name": "SEO trategies",
+  { 
+    "name": "SEO new new trategies",
     "description": "Optimizing our website for search engine search",
-    "userId": "f10d8fd1-c2e9-4a60-b707-dc804fe3d6ce"
+    "userId": "b1f1807f-4e25-4a84-8085-cf13ed7a848e"
   }
 
 ### get all projects

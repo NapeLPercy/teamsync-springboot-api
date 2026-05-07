@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:8080 
-@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuYXBlQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3ODEwMzM3NCwiZXhwIjoxNzc4MTA2OTc0fQ.7aqyRWiVo_0qhTtrEOq87XYgHg-3JGPi6zyjdxEQANk
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZXJjeTFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwidXNlcklkIjoiZTliMzdiZjMtYjczZi00MzFhLTkxZDctYzM2YzYzMWIyYzllIiwiaWF0IjoxNzc4MTUzNDE3LCJleHAiOjE3NzgxNTcwMTd9.RXsRR9QWneLNMqTuaCgqPUea6ytfij3_dY1si2ARRac
 ### Register company account
 POST {{baseUrl}}/api/auth/company
 Content-Type: application/json
@@ -7,7 +7,7 @@ Content-Type: application/json
 {
   "name": "Absa",
   "fullName": "John Doe absa",
-  "email": "nape@gmail.com",
+  "email": "percy1@gmail.com",
   "password":"Rosina^*20",
   "status": "ACTIVE",
   "role": "ADMIN"
@@ -23,7 +23,7 @@ Authorization: Bearer {{token}}
   "name": "Absa",
   "companyId": "bb22208b-9f33-4aa6-b642-9223c97f311d",
   "fullName": "John Doe absa",
-  "email": "percy@gmail.com",
+  "email": "percy@lgmapill.com",
   "password": "Rosina^*20",
   "status": "ACTIVE",
   "role": "EMPLOYEE"
@@ -35,6 +35,6 @@ POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
 { 
-  "email": "percy@gmail.com",
+  "email": "percy1@gmail.com",
   "password":"Rosina^*20"
 }

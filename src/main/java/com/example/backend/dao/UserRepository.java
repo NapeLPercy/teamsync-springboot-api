@@ -23,6 +23,14 @@ public class UserRepository {
                 .update();
     }
 
+    public Optional<String> getCompanyId(String userId) {
+        return jdbcClient
+                .sql("SELECT company_id FROM users WHERE id=:user_id")
+                .param("user_id", userId)
+                .query(String.class)
+                .optional();
+
+    }
     /*
      * public List<User> findAll() {
      * return jdbcClient.sql("SELECT * from users")

@@ -40,6 +40,7 @@ public class AccountRepository {
                         a.id,
                         a.email,
                         a.password,
+                        a.user_id,
                         ur.user_role
                     FROM account a
                     LEFT JOIN role ur ON ur.user_id = a.user_id

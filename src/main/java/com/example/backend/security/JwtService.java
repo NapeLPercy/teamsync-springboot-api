@@ -14,14 +14,15 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
-    
-     @Value("${jwt.secret}")
+
+    @Value("${jwt.secret}")
     private String SECRET_KEY;
 
-    public String generateToken(String email, String role) {
+    public String generateToken(String email, String role, String userId) {
         return Jwts.builder()
                 .setSubject(email)
                 .claim("role", role)
+                .claim("userId", userId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hour
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
@@ -33,8 +34,12 @@ public class JwtService {
     }
 
     public String extractRole(String token) {
-    return extractClaims(token).get("role", String.class);
-}
+        return extractClaims(token).get("role", String.class);
+    }
+
+    public String extractUserId(String token) {
+        return extractClaims(token).get("userId", String.class);
+    }
 
     public boolean isTokenValid(String token, String email) {
         return email.equals(extractEmail(token)) && !isTokenExpired(token);

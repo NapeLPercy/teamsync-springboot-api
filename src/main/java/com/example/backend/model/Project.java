@@ -10,6 +10,7 @@ public class Project {
     private Date createdAt;
 
     private String userId;
+    private String companyId;
 
     public Project(String id, String name, String description, Date createdAt) {
         this.id = id;
@@ -60,5 +61,21 @@ public class Project {
     public void setUserId(String userId) {
         this.userId = userId;
     }
+
+    public String getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
+    }
+
+    @Override
+    public String toString() {
+        return "Project [id=" + id + ", name=" + name + ", description=" + description + ", createdAt=" + createdAt
+                + ", userId=" + userId + ", companyId=" + companyId + "]";
+    }
+
+    
 
 }

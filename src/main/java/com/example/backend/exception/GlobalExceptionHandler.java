@@ -4,6 +4,7 @@ import com.example.backend.exception.*;
 
 import java.util.Map;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,5 +29,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
                 "message", ex.getMessage(),
                 "success", false));
+    }
+
+    // Unauthorized access
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<?> handleUnauthorizedAccess(UnauthorizedAccessException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+                "message", ex.getMessage(),
+                "success", false));
+    }
+
+    // database error
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<?> handleDatabaseError(
+            DataAccessException e) {
+
+        return ResponseEntity.status(500).body(
+                Map.of( "success",false,
+                        "error", "Database error",
+                        "message", e.getMessage()));
     }
 }

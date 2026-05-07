@@ -36,9 +36,10 @@ public class LoginService {
             throw new InvalidCredentialsException("Invalid email or password");
 
         String role = account.get().getUserRole().toString();
-        String token = jwtService.generateToken(email, role);
+        String userId = account.get().getUserId();
+        String token = jwtService.generateToken(email, role,userId);
         
-        return new LoginRequest(email,role, token);
+        return new LoginRequest(email,role,userId, token);
     }
 
 }
