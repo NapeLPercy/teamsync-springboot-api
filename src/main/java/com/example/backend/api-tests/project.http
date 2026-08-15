@@ -1,5 +1,14 @@
  @baseUrl = http://localhost:8080
-@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZXJjeTFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwidXNlcklkIjoiZTliMzdiZjMtYjczZi00MzFhLTkxZDctYzM2YzYzMWIyYzllIiwiaWF0IjoxNzc4MTU5NDYwLCJleHAiOjE3NzgxNjMwNjB9.rDNYDkjk-0UVXGySsZ-ivtQ1AfntbmJXhpXEUUP9asc
+@token =eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZXJjeTFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwidXNlcklkIjoiZTliMzdiZjMtYjczZi00MzFhLTkxZDctYzM2YzYzMWIyYzllIiwiaWF0IjoxNzc4MTc4MzEzLCJleHAiOjE3NzgxODE5MTN9.x9qU9MfvY9lJyCM1SXEgnC_B1Yv_CBvyLujKg7zNq3k
+
+### login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{ 
+  "email": "percy1@gmail.com",
+  "password":"Rosina^*20"
+}
 
 ###
 POST {{baseUrl}}/api/projects/admin/add
@@ -13,15 +22,16 @@ Authorization: Bearer {{token}}
   }
 
 ### get all projects
-GET {{baseUrl}}/api/projects
+GET {{baseUrl}}/api/projects/admin/get
+Authorization: Bearer {{token}}
 
 ### get project by id
 GET {{baseUrl}}/api/projects/f10d8fd0-c2e9-4a60-b709-dc804fe1d6ce
 
 
+
 //delete a project
 ###
-DELETE  {{baseUrl}}/api/projects/f10d8fd0-c2e9-4a60-b709-dc804fe1d6ce
-
-
+DELETE  {{baseUrl}}/api/projects/admin/delete/83b7eafa-dfef-456d-acec-1f4c7ee0f3c0
+Authorization: Bearer {{token}}
 //2026-01-25

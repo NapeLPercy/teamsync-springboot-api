@@ -1,5 +1,6 @@
 @baseUrl = http://localhost:8080 
-@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZXJjeTFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwidXNlcklkIjoiZTliMzdiZjMtYjczZi00MzFhLTkxZDctYzM2YzYzMWIyYzllIiwiaWF0IjoxNzc4MTUzNDE3LCJleHAiOjE3NzgxNTcwMTd9.RXsRR9QWneLNMqTuaCgqPUea6ytfij3_dY1si2ARRac
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZXJjeTFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwidXNlcklkIjoiZTliMzdiZjMtYjczZi00MzFhLTkxZDctYzM2YzYzMWIyYzllIiwiaWF0IjoxNzc4MTYyODU1LCJleHAiOjE3NzgxNjY0NTV9.foAfZGeMMcifB9pixAWrPLrVShmNCnhuxbnYIA7l2uQ"
+
 ### Register company account
 POST {{baseUrl}}/api/auth/company
 Content-Type: application/json

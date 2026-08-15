@@ -18,16 +18,15 @@ public class TaskRepository {
         this.jdbcClient = jdbcClient;
     }
 
-    public String create(Task task) {
-        System.out.println(task.toString());
+    public int saveTask(Task task) {
+        System.out.println("THIS IS TASK DATA ==="+task.toString());
 
-        int created = jdbcClient
-                .sql("INSERT INTO tasks(id,title,description,status, priority, due_date, user_id, project_id) " +
+        return jdbcClient
+                .sql("INSERT INTO task(id,title,description,status, priority, due_date, user_id, project_id) " +
                         "VALUES(?,?,?,?::task_statuses,?::task_priorities,?::date,?,?)")
                 .params(List.of(task.getId(), task.getTitle(), task.getDescription(), task.getStatus().name(),
                         task.getPriority().name(), task.getDueDate(), task.getUserId(), task.getProjectId()))
                 .update();
-        return created == 1 ? "Successfuly created" : "Not created";
     }
 
     public Optional<Task> findById() {

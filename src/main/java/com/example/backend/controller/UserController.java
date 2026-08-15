@@ -1,7 +1,13 @@
 package com.example.backend.controller;
 
+import java.time.Duration;
+import java.util.Map;
+
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +26,12 @@ import com.example.backend.model.User;
 import com.example.backend.service.LoginService;
 import com.example.backend.service.RegisterService;
 import com.example.backend.dto.LoginRequest;
-import com.example.backend.dto.RegisterRequest;
+import com.example.backend.dto.RegisterEmployeeRequest;
+import com.example.backend.dto.RegisterCompanyRequest;
 import com.example.backend.dto.UserChangePassword;
 import com.example.backend.utils.PasswordManager;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.*;
 
@@ -38,18 +47,21 @@ public class UserController {
         this.loginService = loginService;
     }
 
+    /* add a company */
     @PostMapping("/company")
-    public ResponseEntity<?> createCompany(@RequestBody RegisterRequest req) {
+    public ResponseEntity<?> createCompany(@RequestBody RegisterCompanyRequest req) {
+
         UUID companyId = registerService.createCompany(req);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
                 "message", "Company created successfully",
                 "success", true,
-                "data", companyId));
+                "companyId", companyId));
     }
 
+    /* add an employee to a company */
     @PostMapping("/employee")
-    public ResponseEntity<?> createEmployee(@RequestBody RegisterRequest req) {
+    public ResponseEntity<?> createEmployee(@RequestBody RegisterEmployeeRequest req) {
         UUID userId = registerService.createEmployee(req);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
                 "message", "User Account created successfully",
@@ -57,14 +69,32 @@ public class UserController {
                 "data", userId));
     }
 
+    // login users
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Account account) {
+    public ResponseEntity<?> login(@RequestBody Account account, HttpServletResponse response) {
+        LoginRequest validAccount = loginService.loginUser(
+                account.getEmail(),
+                account.getPassword());
 
-        LoginRequest validAccount = loginService.loginUser(account.getEmail(), account.getPassword());
+        ResponseCookie cookie = ResponseCookie.from(
+                "accessToken",
+                validAccount.token())
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(Duration.ofHours(24))
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
                 "message", "Successfully logged in",
                 "success", true,
-                "data", validAccount));
+                "user", Map.of(
+                        "email", validAccount.email(),
+                        "role", validAccount.role(),
+                        "userId", validAccount.userId())));
     }
 
     /*

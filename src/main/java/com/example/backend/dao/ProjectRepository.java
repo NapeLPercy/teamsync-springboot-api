@@ -36,6 +36,20 @@ public class ProjectRepository {
                 .update();
     }
 
+    public Optional<String> getProjectId(String projectId, String userId) {
+    return jdbcClient
+            .sql("""
+                 SELECT p.id 
+                 FROM project p 
+                 INNER JOIN company c ON c.id = p.company_id 
+                 WHERE p.id = :project_id AND p.user_id = :user_id
+                 """)
+            .param("project_id", projectId)
+            .param("user_id", userId)
+            .query(String.class)
+            .optional();
+}
+
     /*
      * public Optional<Project> findById(String id) {
      * return jdbcClient

@@ -6,7 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.backend.dao.*;
 import com.example.backend.dao.UserRepository;
-import com.example.backend.dto.RegisterRequest;
+import com.example.backend.dto.RegisterCompanyRequest;
+import com.example.backend.dto.RegisterEmployeeRequest;
 import com.example.backend.exception.EmailAlreadyRegisteredException;
 import com.example.backend.model.*;
 import java.util.*;
@@ -31,40 +32,44 @@ public class RegisterService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /*Create an account for company and first company user*/
     @Transactional
-    public UUID createCompany(RegisterRequest req) {
+    public UUID createCompany(RegisterCompanyRequest req) {
+        //checks email uniqueness
         if (isEmailRegistered(req.email())) {
             throw new EmailAlreadyRegisteredException("Email already registered");
         }
+
 
         UUID companyId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         UUID accountId = UUID.randomUUID();
         UUID roleId = UUID.randomUUID();
 
-        Company company = new Company(companyId.toString(), req.name());
+        Company company = new Company(companyId.toString(), req.companyName());
 
         User user = new User(userId.toString(), req.fullName(), companyId.toString());
 
         String hashedPassword = passwordEncoder.encode(req.password());
 
-        Account account = new Account(accountId.toString(), req.email(), hashedPassword, req.status(),
+        Account account = new Account(accountId.toString(), req.email(), hashedPassword, "validated",
                 userId.toString());
 
         companyRepository.saveCompany(company);
         userRepository.saveUser(user);
         accountRepository.saveAccount(account);
-        roleRepository.saveRole(roleId.toString(), req.role(), userId.toString());
+        roleRepository.saveRole(roleId.toString(), "ADMIN", userId.toString());
 
         return companyId;
     }
 
     @Transactional
-    public UUID createEmployee(RegisterRequest req) {
+    public UUID createEmployee(RegisterEmployeeRequest req) {
+        //checks email uniqueness
         if (isEmailRegistered(req.email())) {
             throw new EmailAlreadyRegisteredException("Email already registered");
         }
-        String companyId = req.companyId();// taken from req
+        String companyId = req.companyId();// taken from req for an exisiting company
         UUID userId = UUID.randomUUID();
         UUID accountId = UUID.randomUUID();
         UUID roleId = UUID.randomUUID();
@@ -73,12 +78,12 @@ public class RegisterService {
 
         String hashedPassword = passwordEncoder.encode(req.password());
 
-        Account account = new Account(accountId.toString(), req.email(), hashedPassword, req.status(),
+        Account account = new Account(accountId.toString(), req.email(), hashedPassword,"Validated",
                 userId.toString());
 
         userRepository.saveUser(user);
         accountRepository.saveAccount(account);
-        roleRepository.saveRole(roleId.toString(), req.role(), userId.toString());
+        roleRepository.saveRole(roleId.toString(), "EMPLOYEE", userId.toString());
 
         return userId;
     }
