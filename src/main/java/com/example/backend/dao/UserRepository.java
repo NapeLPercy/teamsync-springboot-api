@@ -1,5 +1,6 @@
 package com.example.backend.dao;
 
+import com.example.backend.dto.Employee;
 import com.example.backend.model.User;
 
 import java.util.*;
@@ -31,6 +32,26 @@ public class UserRepository {
                 .optional();
 
     }
+
+ public List<Employee> getAllEmployees(String companyId) {
+    return jdbcClient.sql("""
+            SELECT u.id AS userId,
+                   u.full_name AS fullName,
+                   u.is_active AS isActive,
+                   a.email,
+                   a.status,
+                   a.created_at AS createdAt,
+                   r.user_role AS role
+            FROM users u
+            INNER JOIN account a ON u.id = a.user_id
+            INNER JOIN role r ON u.id = r.user_id
+            WHERE u.company_id = :company_id
+              AND r.user_role = 'EMPLOYEE'
+            """)
+            .param("company_id", companyId)
+            .query(Employee.class)
+            .list();
+}
     /*
      * public List<User> findAll() {
      * return jdbcClient.sql("SELECT * from users")

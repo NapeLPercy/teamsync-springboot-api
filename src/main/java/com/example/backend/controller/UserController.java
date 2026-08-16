@@ -1,7 +1,6 @@
 package com.example.backend.controller;
 
 import java.time.Duration;
-import java.util.Map;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +21,7 @@ import org.springframework.web.service.annotation.DeleteExchange;
 
 import com.example.backend.dao.UserRepository;
 import com.example.backend.model.Account;
+import com.example.backend.model.AuthenticatedUser;
 import com.example.backend.model.User;
 import com.example.backend.service.LoginService;
 import com.example.backend.service.RegisterService;
@@ -30,7 +30,7 @@ import com.example.backend.dto.RegisterEmployeeRequest;
 import com.example.backend.dto.RegisterCompanyRequest;
 import com.example.backend.dto.UserChangePassword;
 import com.example.backend.utils.PasswordManager;
-
+import org.springframework.security.core.Authentication;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.*;
@@ -39,97 +39,103 @@ import java.util.*;
 @RestController
 public class UserController {
 
-    private final RegisterService registerService;
-    private final LoginService loginService;
+        private final RegisterService registerService;
+        private final LoginService loginService;
 
-    public UserController(RegisterService registerService, LoginService loginService) {
-        this.registerService = registerService;
-        this.loginService = loginService;
-    }
+        public UserController(RegisterService registerService, LoginService loginService) {
+                this.registerService = registerService;
+                this.loginService = loginService;
+        }
 
-    /* add a company */
-    @PostMapping("/company")
-    public ResponseEntity<?> createCompany(@RequestBody RegisterCompanyRequest req) {
+        /* add a company */
+        @PostMapping("/company")
+        public ResponseEntity<?> createCompany(@RequestBody RegisterCompanyRequest req) {
 
-        UUID companyId = registerService.createCompany(req);
+                UUID companyId = registerService.createCompany(req);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
-                "message", "Company created successfully",
-                "success", true,
-                "companyId", companyId));
-    }
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
+                                "message", "Company created successfully",
+                                "success", true,
+                                "companyId", companyId));
+        }
 
-    /* add an employee to a company */
-    @PostMapping("/employee")
-    public ResponseEntity<?> createEmployee(@RequestBody RegisterEmployeeRequest req) {
-        UUID userId = registerService.createEmployee(req);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
-                "message", "User Account created successfully",
-                "success", true,
-                "data", userId));
-    }
+        /* add an employee to a company */
+        @PostMapping("/employee")
+        public ResponseEntity<?> createEmployee(
+                        Authentication authentication,
+                        @RequestBody RegisterEmployeeRequest req) {
 
-    // login users
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Account account, HttpServletResponse response) {
-        LoginRequest validAccount = loginService.loginUser(
-                account.getEmail(),
-                account.getPassword());
+                AuthenticatedUser loggedUser = (AuthenticatedUser) authentication.getPrincipal();
 
-        ResponseCookie cookie = ResponseCookie.from(
-                "accessToken",
-                validAccount.token())
-                .httpOnly(true)
-                .secure(false)
-                .sameSite("Lax")
-                .path("/")
-                .maxAge(Duration.ofHours(24))
-                .build();
+                UUID employeeId = registerService.createEmployee(req, loggedUser);
 
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
+                                "message", "User Account created successfully",
+                                "success", true,
+                                "data", employeeId));
+        }
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
-                "message", "Successfully logged in",
-                "success", true,
-                "user", Map.of(
-                        "email", validAccount.email(),
-                        "role", validAccount.role(),
-                        "userId", validAccount.userId())));
-    }
+        // login users
+        @PostMapping("/login")
+        public ResponseEntity<?> login(@RequestBody Account account, HttpServletResponse response) {
+                LoginRequest validAccount = loginService.loginUser(
+                                account.getEmail(),
+                                account.getPassword());
 
-    /*
-     * @GetMapping("/{id}")
-     * public Optional<User> findById(@PathVariable String id) {
-     * return userRepository.findById(id);
-     * }
-     * 
-     * @GetMapping
-     * public List<User> findAll() {
-     * return userRepository.findAll();
-     * }
-     * 
-     * @GetMapping("/search")
-     * public List<User> searchUsers(
-     * 
-     * @RequestParam(required = false) String email,
-     * 
-     * @RequestParam(required = false) Boolean isActive) {
-     * return userRepository.search(email, isActive);
-     * }
-     * 
-     * @PutMapping("/{id}")
-     * public String update(@PathVariable String id, @RequestBody User user) {
-     * return userRepository.update(id, user);
-     * }
-     * 
-     * @DeleteMapping("/{id}")
-     * public String delete(@PathVariable String id) {
-     * return userRepository.delete(id);
-     * }
-     * 
-     * @PutMapping("/change-password")
-     * public String changePassword(@RequestBody UserChangePassword ucp) {
-     * return userRepository.changePassword(ucp);
-     * }
-     */
+                ResponseCookie cookie = ResponseCookie.from(
+                                "accessToken",
+                                validAccount.token())
+                                .httpOnly(true)
+                                .secure(false)
+                                .sameSite("Lax")
+                                .path("/")
+                                .maxAge(Duration.ofHours(24))
+                                .build();
+
+                response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
+                                "message", "Successfully logged in",
+                                "success", true,
+                                "user", Map.of(
+                                                "email", validAccount.email(),
+                                                "role", validAccount.role(),
+                                                "userId", validAccount.userId())));
+        }
+
+        /*
+         * @GetMapping("/{id}")
+         * public Optional<User> findById(@PathVariable String id) {
+         * return userRepository.findById(id);
+         * }
+         * 
+         * @GetMapping
+         * public List<User> findAll() {
+         * return userRepository.findAll();
+         * }
+         * 
+         * @GetMapping("/search")
+         * public List<User> searchUsers(
+         * 
+         * @RequestParam(required = false) String email,
+         * 
+         * @RequestParam(required = false) Boolean isActive) {
+         * return userRepository.search(email, isActive);
+         * }
+         * 
+         * @PutMapping("/{id}")
+         * public String update(@PathVariable String id, @RequestBody User user) {
+         * return userRepository.update(id, user);
+         * }
+         * 
+         * @DeleteMapping("/{id}")
+         * public String delete(@PathVariable String id) {
+         * return userRepository.delete(id);
+         * }
+         * 
+         * @PutMapping("/change-password")
+         * public String changePassword(@RequestBody UserChangePassword ucp) {
+         * return userRepository.changePassword(ucp);
+         * }
+         */
 }
