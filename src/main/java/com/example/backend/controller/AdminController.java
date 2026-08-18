@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.Employee;
+import com.example.backend.dto.UserResponse;
 import com.example.backend.model.AuthenticatedUser;
 import com.example.backend.service.AdminService;
 
@@ -25,8 +26,9 @@ public class AdminController {
         this.adminService = adminService;
     }
 
+    //admin views all company employees
     @GetMapping("/employees")
-    public ResponseEntity<?> getEmployees(Authentication authentication) {
+    public ResponseEntity<?> findAllEmployees(Authentication authentication) {
 
         AuthenticatedUser validUser = (AuthenticatedUser) authentication.getPrincipal();
 
@@ -36,4 +38,7 @@ public class AdminController {
                 "success", true,
                 "employees", employees));
     }
+
+    
+    
 }

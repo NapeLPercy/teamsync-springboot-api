@@ -6,9 +6,14 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.example.backend.dao.ProjectDetailsResponse;
 import com.example.backend.dao.ProjectRepository;
 import com.example.backend.dao.UserRepository;
+import com.example.backend.dto.ProjectRequest;
+import com.example.backend.dto.UserResponse;
+import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.exception.UnauthorizedAccessException;
+import com.example.backend.model.AuthenticatedUser;
 import com.example.backend.model.Project;
 
 @Service
@@ -25,17 +30,30 @@ public class ProjectService {
         Optional<String> companyId = userRepository.getCompanyId(userId);
 
         if (companyId.isEmpty()) {
-            throw new UnauthorizedAccessException(errorMessage);
+            throw new ResourceNotFoundException(errorMessage);
         }
         return companyId.get();
     }
 
     // add project
-    public String createProject(Project project, String userId) {
-        String companyId = this.getCompanyId(userId, "You are not allowed to create projects for this company");
+    public String createProject(ProjectRequest projectReq, AuthenticatedUser validUser) {
+
+        if (!validUser.getRole().equals("ADMIN"))
+            throw new UnauthorizedAccessException("You are not allowed to add projects");
+
+        // checks if company exist
+        String adminId = validUser.getUserId();
+        String companyId = this.getCompanyId(adminId, "Company not found");
 
         String projectId = UUID.randomUUID().toString();
-        project.setId(projectId);
+        Project project = new Project(
+                projectId,
+                projectReq.name(),
+                projectReq.description(),
+                projectReq.category(),
+                projectReq.dueDate());
+
+        project.setUserId(adminId);// creator id
         project.setCompanyId(companyId);
 
         projectRepository.insertProject(project);
@@ -44,15 +62,37 @@ public class ProjectService {
     }
 
     // view all projects
-    public List<Project> viewAllCompanyProjects(String userId, String role) {
-        if (!role.equals(("ADMIN"))) {
-            throw new UnauthorizedAccessException("You are not allowed to view all company projects");
+    public List<Project> viewAllCompanyProjects(AuthenticatedUser validUser) {
+        if (!validUser.getRole().equals(("ADMIN"))) {
+            throw new UnauthorizedAccessException("Only admin can view all company projects");
         }
-
-        String companyId = this.getCompanyId(userId, "You are not allowed to view projects for this company");
-
-        return projectRepository.findAll(companyId);
+        String adminId = validUser.getUserId();
+        String companyId = this.getCompanyId(adminId, "Company not found");
+        return projectRepository.fetchAllProjects(companyId);
     };
+
+    // view all projects created by me
+    public List<Project> viewAllProjectsCreatedByMe(AuthenticatedUser validUser) {
+        if (!validUser.getRole().equals(("ADMIN"))) {
+            throw new UnauthorizedAccessException("Only admin can view all company ");
+        }
+        String adminId = validUser.getUserId();
+        getCompanyId(adminId, "Company not found");
+        return projectRepository.fetchAllProjectsCreatedByMe(adminId);
+    };
+
+    // get all projects details
+    public List<ProjectDetailsResponse> getProjectsDetails(AuthenticatedUser validUser) {
+        String role = validUser.getRole();
+        String userId = validUser.getUserId();
+
+        if (!role.equals("ADMIN"))
+            throw new UnauthorizedAccessException("Only admin can get project details");
+
+        String companyId = this.getCompanyId(userId, "Company not found");
+        
+        return projectRepository.fetchProjectsDetails(companyId);
+    }
 
     // delete projects
     public String deleteProject(String userId, String role, String projectId) {

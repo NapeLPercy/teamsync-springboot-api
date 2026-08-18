@@ -13,17 +13,20 @@ public class Task {
     private LocalDate dueDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    private String userId;
     private String projectId;
+    private String assignedTo;
+    private String assignedBy;
 
     public Task(String id, String title, String description, TaskStatusType status, TaskPriorityType priority,
-            LocalDate dueDate) {
+            LocalDate dueDate, String assignedTo, String assignedBy, String projectId) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.status = status;
         this.priority = priority;
+        this.assignedBy = assignedBy;
+        this.assignedTo = assignedTo;
+        this.projectId = projectId;
         this.dueDate = dueDate;
     }
 
@@ -94,12 +97,20 @@ public class Task {
         this.updatedAt = updatedAt;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getAssignedTo() {
+        return assignedTo;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setAssigned_to(String assignedTo) {
+        this.assignedTo = assignedTo;
+    }
+
+    public String getAssignedBy() {
+        return assignedBy;
+    }
+
+    public void setAssigned_by(String assignedBy) {
+        this.assignedBy = assignedBy;
     }
 
     public String getProjectId() {
@@ -114,10 +125,8 @@ public class Task {
     public String toString() {
         return "Task [id=" + id + ", title=" + title + ", description=" + description + ", status=" + status
                 + ", priority=" + priority + ", dueDate=" + dueDate + ", createdAt=" + createdAt + ", updatedAt="
-                + updatedAt + ", userId=" + userId + ", projectId=" + projectId + "]";
+                + updatedAt + ", projectId=" + projectId + ", assignedTo=" + assignedTo + ", assignedBy="
+                + assignedBy + "]";
     }
-
-
-    
 
 }

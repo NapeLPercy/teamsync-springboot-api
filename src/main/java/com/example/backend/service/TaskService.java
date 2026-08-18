@@ -1,42 +1,114 @@
 package com.example.backend.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
 import com.example.backend.dao.ProjectRepository;
 import com.example.backend.dao.TaskRepository;
+import com.example.backend.dao.UserRepository;
+import com.example.backend.dto.TaskRequest;
+import com.example.backend.dto.TaskResponse;
+import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.exception.UnauthorizedAccessException;
+import com.example.backend.model.AuthenticatedUser;
 import com.example.backend.model.Task;
+import com.example.backend.model.TaskStatusType;
 
 @Service
 public class TaskService {
 
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
 
-    public TaskService(TaskRepository taskRepository, ProjectRepository projectRepository) {
+    public TaskService(TaskRepository taskRepository, ProjectRepository projectRepository,
+            UserRepository userRepository) {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
+        this.userRepository = userRepository;
     }
 
-    private String getProjectId(String userId, String projectId) {
-        Optional<String> savedProjectId = projectRepository.getProjectId(projectId, userId);
+    // Get the company that the authenticated user belongs to.
+    private String getUserCompanyId(String userId, String errorMessage) {
+        Optional<String> companyId = userRepository.getCompanyId(userId);
 
-        if (savedProjectId.isEmpty()) {
-            throw new UnauthorizedAccessException("You are not authourized to complete that action");
-        }
-        return savedProjectId.get();
+        if (companyId.isEmpty())
+            throw new ResourceNotFoundException(errorMessage);
+
+        return companyId.get();
     }
 
-    public int addTask(Task task, String userId) {
-        //check if the request is by someone who belongs to this company
-//check if user id bellonsg to this company
-//check if the projectId belongs to this company
+    public String addTask(TaskRequest taskReq, AuthenticatedUser validUser) {
 
-        String projectId = this.getProjectId(task.getProjectId(), task.getUserId());
+        // Only admins are allowed to create tasks.
+        if (!validUser.getRole().equals("ADMIN"))
+            throw new UnauthorizedAccessException("Only admin can add a task");
 
-        // checks if this task belongs to project that belongs to this user's company
-        return taskRepository.saveTask(task);
+        String adminId = validUser.getUserId();
+
+        // Determine the company from the authenticated admin.
+        // The company is never trusted from the request.
+        String companyId = this.getUserCompanyId(
+                adminId,
+                "User does not belong to a company");
+
+        // Ensure the selected project belongs to the admin's company.
+        boolean projectBelongsToCompany = projectRepository.projectBelongsToCompany(
+                taskReq.projectId(),
+                companyId);
+
+        if (!projectBelongsToCompany)
+            throw new ResourceNotFoundException(
+                    "Project does not belong to this company");
+
+        // Ensure the employee being assigned to the task belongs
+        // to the same company as the project.
+        boolean userBelongsToCompany = userRepository.userBelongsToCompany(
+                taskReq.assignedTo(),
+                companyId);
+
+        if (!userBelongsToCompany)
+            throw new ResourceNotFoundException(
+                    "User does not belong to this company");
+
+        String taskId = UUID.randomUUID().toString();
+
+        Task task = new Task(
+                taskId,
+                taskReq.title(),
+                taskReq.description(),
+                TaskStatusType.NEW,
+                taskReq.priority(),
+                taskReq.dueDate(),
+                taskReq.assignedTo(),
+                adminId,
+                taskReq.projectId());
+
+        // All company-level relationships have been validated.
+        taskRepository.saveTask(task);
+
+        return taskId;
+    }
+
+    // get all tasks
+    public List<TaskResponse> getAllTasks(AuthenticatedUser validUser) {
+
+        // Only admins are allowed to view tasks.
+        if (!validUser.getRole().equals("ADMIN"))
+            throw new UnauthorizedAccessException("Only admin can view a task");
+
+        String adminId = validUser.getUserId();
+
+        // Determine the company from the authenticated admin.
+        // The company is never trusted from the request.
+        String companyId = this.getUserCompanyId(
+                adminId,
+                "User does not belong to a company");
+
+        return taskRepository.getAllTasks(companyId);
+
     }
 }

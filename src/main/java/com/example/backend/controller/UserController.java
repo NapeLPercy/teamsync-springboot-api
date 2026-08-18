@@ -25,10 +25,12 @@ import com.example.backend.model.AuthenticatedUser;
 import com.example.backend.model.User;
 import com.example.backend.service.LoginService;
 import com.example.backend.service.RegisterService;
+import com.example.backend.service.UserService;
 import com.example.backend.dto.LoginRequest;
 import com.example.backend.dto.RegisterEmployeeRequest;
 import com.example.backend.dto.RegisterCompanyRequest;
 import com.example.backend.dto.UserChangePassword;
+import com.example.backend.dto.UserResponse;
 import com.example.backend.utils.PasswordManager;
 import org.springframework.security.core.Authentication;
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,10 +43,23 @@ public class UserController {
 
         private final RegisterService registerService;
         private final LoginService loginService;
+        private final UserService userService;
 
-        public UserController(RegisterService registerService, LoginService loginService) {
+        public UserController(RegisterService registerService, LoginService loginService, UserService userService) {
                 this.registerService = registerService;
                 this.loginService = loginService;
+                this.userService = userService;
+        }
+
+        // get all users
+        @GetMapping("/employees")
+        public ResponseEntity<?> findAllEmployeesDetails(Authentication authentication) {
+                AuthenticatedUser validUser = (AuthenticatedUser) authentication.getPrincipal();
+                List<UserResponse> allEmployeesDetails = userService.getEmployeesDetails(validUser);
+
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
+                                "success", true,
+                                "employees", allEmployeesDetails));
         }
 
         /* add a company */

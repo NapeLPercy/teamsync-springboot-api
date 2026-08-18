@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dao.TaskRepository;
+import com.example.backend.dto.TaskRequest;
+import com.example.backend.dto.TaskResponse;
 import com.example.backend.model.AuthenticatedUser;
 import com.example.backend.model.Task;
 import com.example.backend.service.TaskService;
@@ -28,20 +30,31 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @PostMapping
-    public ResponseEntity<?> create(@AuthenticationPrincipal AuthenticatedUser authUser, @RequestBody Task task) {
+    @PostMapping("/")
+    public ResponseEntity<?> createTask(@AuthenticationPrincipal AuthenticatedUser authUser,
+            @RequestBody TaskRequest taskReq) {
 
-        int taskId = taskService.addTask(task, authUser.getUserId());
+        String taskId = taskService.addTask(taskReq, authUser);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(Map.of("success", true, "data", "", "message", "successfully added a task"));
+                .body(Map.of("success", true,
+                        "taskId", taskId,
+                        "message", "successfully added a task"));
     }
-    /*
-     * @GetMapping("/{id}")
-     * public List<Task> findAll(@PathVariable String id) {
-     * return taskRepository.findAll(id);
-     * }
-     * 
+
+    @GetMapping("/")
+    public ResponseEntity<?> findAllTasks(@AuthenticationPrincipal AuthenticatedUser validUser) {
+        List<TaskResponse> tasks = taskService.getAllTasks(validUser);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
+                "success", true,
+                "message", "successfuly fetched all tasks",
+                "tasks", tasks
+
+        ));
+    }
+
+    /**
      * @PutMapping("/{id}/status")
      * public String update(@PathVariable("id") String taskId, @RequestBody Task
      * task) {

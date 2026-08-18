@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import com.example.backend.dto.TaskResponse;
 import com.example.backend.model.Task;
 import com.example.backend.model.TaskStatusType;
 
@@ -19,18 +20,14 @@ public class TaskRepository {
     }
 
     public int saveTask(Task task) {
-        System.out.println("THIS IS TASK DATA ==="+task.toString());
-
         return jdbcClient
-                .sql("INSERT INTO task(id,title,description,status, priority, due_date, user_id, project_id) " +
-                        "VALUES(?,?,?,?::task_statuses,?::task_priorities,?::date,?,?)")
+                .sql("INSERT INTO task(id,title,description,status, priority, due_date,assigned_to, assigned_by, project_id) "
+                        +
+                        "VALUES(?,?,?,?::task_statuses,?::task_priorities,?::date,?,?,?)")
                 .params(List.of(task.getId(), task.getTitle(), task.getDescription(), task.getStatus().name(),
-                        task.getPriority().name(), task.getDueDate(), task.getUserId(), task.getProjectId()))
+                        task.getPriority().name(), task.getDueDate(), task.getAssignedTo(), task.getAssignedBy(),
+                        task.getProjectId()))
                 .update();
-    }
-
-    public Optional<Task> findById() {
-        return null;
     }
 
     public List<Task> findAll(String id) {
@@ -52,5 +49,25 @@ public class TaskRepository {
         return update == 1 ? "Successful" : "Not successful";
     }
 
-   
+    public List<TaskResponse> getAllTasks(String companyId) {
+        return jdbcClient
+                .sql("""
+                        SELECT
+                            t.id,
+                            t.title,
+                            t.description,
+                            t.status::text AS status,
+                            t.priority::text AS priority,
+                            t.due_date AS dueDate,
+                            t.created_at AS createdAt
+                        FROM task t
+                        INNER JOIN project p
+                            ON p.id = t.project_id
+                        WHERE p.company_id = :company_id
+                        """)
+                .param("company_id", companyId)
+                .query(TaskResponse.class)
+                .list();
+    }
+
 }

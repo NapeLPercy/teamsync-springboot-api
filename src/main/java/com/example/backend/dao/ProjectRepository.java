@@ -7,57 +7,85 @@ import java.util.*;
 
 @Repository
 public class ProjectRepository {
-    private final JdbcClient jdbcClient;
+        private final JdbcClient jdbcClient;
 
-    public ProjectRepository(JdbcClient jdbcClient) {
-        this.jdbcClient = jdbcClient;
-    }
+        public ProjectRepository(JdbcClient jdbcClient) {
+                this.jdbcClient = jdbcClient;
+        }
 
-    public int insertProject(Project project) {
-        return jdbcClient
-                .sql("INSERT INTO project(id, name, description, user_id, company_id) VALUES(?,?,?,?,?)")
-                .params(List.of(project.getId(), project.getName(), project.getDescription(), project.getUserId(),
-                        project.getCompanyId()))
-                .update();
-    }
+        // add project
+        public int insertProject(Project project) {
+                return jdbcClient
+                                .sql("INSERT INTO project(id, name, description,category, due_date, assigned_by, company_id) VALUES(?,?,?,?,?,?,?)")
+                                .params(List.of(project.getId(), project.getName(), project.getDescription(),
+                                                project.getCategory(),
+                                                project.getDueDate(), project.getUserId(),
+                                                project.getCompanyId()))
+                                .update();
+        }
 
-    public List<Project> findAll(String companyId) {
-        return jdbcClient.sql("SELECT * FROM project WHERE company_id =:company_id")
-                .param("company_id", companyId)
-                .query(Project.class)
-                .list();
-    }
+        // fetch all projects
+        public List<Project> fetchAllProjects(String companyId) {
+                return jdbcClient.sql(
+                                "SELECT id,name,description,category, due_date, created_at, assigned_by AS userId FROM project WHERE company_id =:company_id")
+                                .param("company_id", companyId)
+                                .query(Project.class)
+                                .list();
+        }
 
-    public int delete(String projectId, String companyId) {
-        return jdbcClient
-                .sql("DELETE FROM project WHERE id = :project_id AND company_id = :company_id")
-                .param("project_id", projectId)
-                .param("company_id", companyId)
-                .update();
-    }
+        // fetch all projects i created
+        public List<Project> fetchAllProjectsCreatedByMe(String adminId) {
+                return jdbcClient.sql(
+                                "SELECT id,name,description,category, due_date, created_at, assigned_by AS userId FROM project WHERE assigned_by =:assigned_by")
+                                .param("assigned_by", adminId)
+                                .query(Project.class)
+                                .list();
+        }
 
-    public Optional<String> getProjectId(String projectId, String userId) {
-    return jdbcClient
-            .sql("""
-                 SELECT p.id 
-                 FROM project p 
-                 INNER JOIN company c ON c.id = p.company_id 
-                 WHERE p.id = :project_id AND p.user_id = :user_id
-                 """)
-            .param("project_id", projectId)
-            .param("user_id", userId)
-            .query(String.class)
-            .optional();
-}
+        // fetch project name and id
+        public List<ProjectDetailsResponse> fetchProjectsDetails(String companyId) {
+                return jdbcClient
+                                .sql("SELECT p.id, p.name FROM project p WHERE company_id =:company_id")
+                                .param("company_id", companyId)
+                                .query(ProjectDetailsResponse.class)
+                                .list();
+        }
 
-    /*
-     * public Optional<Project> findById(String id) {
-     * return jdbcClient
-     * .sql("SELECT * FROM projects WHERE id=:id")
-     * .param("id", id)
-     * .query(Project.class).optional();
-     * }
-     * 
-     * 
-     */
+        public int delete(String projectId, String companyId) {
+                return jdbcClient
+                                .sql("DELETE FROM project WHERE id = :project_id AND company_id = :company_id")
+                                .param("project_id", projectId)
+                                .param("company_id", companyId)
+                                .update();
+        }
+
+        // verify project belongs to a company
+        public boolean projectBelongsToCompany(
+                        String projectId,
+                        String companyId) {
+
+                return jdbcClient
+                                .sql("""
+                                                SELECT EXISTS (
+                                                    SELECT 1
+                                                    FROM project
+                                                    WHERE id = :project_id
+                                                    AND company_id = :company_id
+                                                )
+                                                """)
+                                .param("project_id", projectId)
+                                .param("company_id", companyId)
+                                .query(Boolean.class)
+                                .single();
+        }
+        /*
+         * public Optional<Project> findById(String id) {
+         * return jdbcClient
+         * .sql("SELECT * FROM projects WHERE id=:id")
+         * .param("id", id)
+         * .query(Project.class).optional();
+         * }
+         * 
+         * 
+         */
 }

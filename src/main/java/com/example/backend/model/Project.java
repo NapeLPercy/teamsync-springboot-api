@@ -1,5 +1,6 @@
 package com.example.backend.model;
 
+import java.time.*;
 import java.util.*;
 
 public class Project {
@@ -7,16 +8,18 @@ public class Project {
     private String id;
     private String name;
     private String description;
-    private Date createdAt;
-
+    private LocalDateTime createdAt;
+    private LocalDate dueDate;
+    private String category;
     private String userId;
     private String companyId;
 
-    public Project(String id, String name, String description, Date createdAt) {
+    public Project(String id, String name, String description, String category, LocalDate dueDate) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.createdAt = createdAt;
+        this.category = category;
+        this.dueDate = dueDate;
     }
 
     public Project() {
@@ -46,11 +49,27 @@ public class Project {
         this.description = description;
     }
 
-    public Date getCreatedAt() {
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -75,7 +94,5 @@ public class Project {
         return "Project [id=" + id + ", name=" + name + ", description=" + description + ", createdAt=" + createdAt
                 + ", userId=" + userId + ", companyId=" + companyId + "]";
     }
-
-    
 
 }

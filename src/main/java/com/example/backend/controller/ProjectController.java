@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend.dao.ProjectDetailsResponse;
+import com.example.backend.dto.ProjectRequest;
+import com.example.backend.dto.UserResponse;
 import com.example.backend.model.AuthenticatedUser;
 import com.example.backend.model.Project;
 import com.example.backend.service.ProjectService;
@@ -26,26 +29,50 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
-    @PostMapping("/admin/add")
-    public ResponseEntity<?> create(Authentication authentication, @RequestBody Project project) {
+    @PostMapping("/")
+    public ResponseEntity<?> createProject(Authentication authentication, @RequestBody ProjectRequest project) {
 
-        AuthenticatedUser loggedUser = (AuthenticatedUser) authentication.getPrincipal();// get data from context
-        String projectId = projectService.createProject(project, loggedUser.getUserId());
+        AuthenticatedUser validUser = (AuthenticatedUser) authentication.getPrincipal();// get data from context
+        String projectId = projectService.createProject(project, validUser);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
                 "message", "Project successfully added",
                 "success", true,
-                "data", projectId));
+                "projectId", projectId));
     }
 
-    @GetMapping("/admin/get")
-    public ResponseEntity<?> findAll(Authentication authentication) {
-        AuthenticatedUser loggedUser = (AuthenticatedUser) authentication.getPrincipal();// get data from context
-        List<Project> projects = projectService.viewAllCompanyProjects(loggedUser.getUserId(), loggedUser.getRole());
+    // get all projectsDetails
+    @GetMapping("/details")
+    public ResponseEntity<?> findAllProjectsDetails(Authentication authentication) {
+        AuthenticatedUser validUser = (AuthenticatedUser) authentication.getPrincipal();
+        List<ProjectDetailsResponse> allProjectsDetails = projectService.getProjectsDetails(validUser);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
                 "success", true,
-                "data", projects,
+                "projects", allProjectsDetails));
+    }
+
+    // get all projects
+    @GetMapping("/")
+    public ResponseEntity<?> findAllCompanyProjects(Authentication authentication) {
+        AuthenticatedUser validUser = (AuthenticatedUser) authentication.getPrincipal();// get data from context
+        List<Project> projects = projectService.viewAllCompanyProjects(validUser);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
+                "success", true,
+                "projects", projects,
+                "message", "Successfully fetched company projects"));
+    }
+
+    // get all projects
+    @GetMapping("/my")
+    public ResponseEntity<?> findAllMyProjects(Authentication authentication) {
+        AuthenticatedUser validUser = (AuthenticatedUser) authentication.getPrincipal();// get data from context
+        List<Project> projects = projectService.viewAllProjectsCreatedByMe(validUser);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
+                "success", true,
+                "projects", projects,
                 "message", "Successfully fetched company projects"));
     }
 
