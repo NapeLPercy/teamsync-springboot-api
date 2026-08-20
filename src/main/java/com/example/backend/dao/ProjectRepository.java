@@ -3,6 +3,8 @@ package com.example.backend.dao;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import com.example.backend.model.*;
+
+import java.time.LocalDate;
 import java.util.*;
 
 @Repository
@@ -45,10 +47,19 @@ public class ProjectRepository {
         // fetch project name and id
         public List<ProjectDetailsResponse> fetchProjectsDetails(String companyId) {
                 return jdbcClient
-                                .sql("SELECT p.id, p.name FROM project p WHERE company_id =:company_id")
+                                .sql("SELECT p.id, p.name, p.due_date AS dueDate FROM project p WHERE company_id =:company_id")
                                 .param("company_id", companyId)
                                 .query(ProjectDetailsResponse.class)
                                 .list();
+        }
+
+        // get project deadline
+        public Optional<LocalDate> getProjectDueDate(String projectId) {
+                return jdbcClient
+                                .sql("SELECT due_date AS dueDate FROM project WHERE id = :project_id")
+                                .param("project_id", projectId)
+                                .query(LocalDate.class)
+                                .optional();
         }
 
         public int delete(String projectId, String companyId) {

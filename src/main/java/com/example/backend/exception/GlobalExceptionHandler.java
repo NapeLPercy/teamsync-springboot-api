@@ -45,12 +45,20 @@ public class GlobalExceptionHandler {
                                 "success", false));
         }
 
+        // Resource invalid
+        @ExceptionHandler(InvalidResourceException.class)
+        public ResponseEntity<?> handleInvalidResource(InvalidResourceException ex) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                                "message", ex.getMessage(),
+                                "success", false));
+        }
+
         // database error
         @ExceptionHandler(DataAccessException.class)
         public ResponseEntity<?> handleDatabaseError(
                         DataAccessException e) {
 
-                                e.printStackTrace();
+                e.printStackTrace();
                 return ResponseEntity.status(500).body(
                                 Map.of("success", false,
                                                 "error", "Database error",

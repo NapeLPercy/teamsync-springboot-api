@@ -1,8 +1,7 @@
 package com.example.backend.service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.util.*;
 
 import org.springframework.stereotype.Service;
 
@@ -11,6 +10,7 @@ import com.example.backend.dao.TaskRepository;
 import com.example.backend.dao.UserRepository;
 import com.example.backend.dto.TaskRequest;
 import com.example.backend.dto.TaskResponse;
+import com.example.backend.exception.InvalidResourceException;
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.exception.UnauthorizedAccessException;
 import com.example.backend.model.AuthenticatedUser;
@@ -41,6 +41,9 @@ public class TaskService {
         return companyId.get();
     }
 
+    /*
+     * ADD TASK
+     */
     public String addTask(TaskRequest taskReq, AuthenticatedUser validUser) {
 
         // Only admins are allowed to create tasks.
@@ -76,6 +79,15 @@ public class TaskService {
 
         String taskId = UUID.randomUUID().toString();
 
+        // VALID TASK DATE
+        LocalDate projectDueDate = projectRepository
+                .getProjectDueDate(taskReq.projectId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Project due date not found"));
+
+        if (taskReq.dueDate().isAfter(projectDueDate)) {
+            throw new InvalidResourceException("Task due date cannot come after project due date");
+        }
         Task task = new Task(
                 taskId,
                 taskReq.title(),
