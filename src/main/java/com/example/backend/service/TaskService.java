@@ -123,4 +123,23 @@ public class TaskService {
         return taskRepository.getAllTasks(companyId);
 
     }
+
+    // get all tasks by me
+    public List<TaskResponse> getAllTasksByMe(AuthenticatedUser validUser) {
+
+        // Only admins are allowed to view tasks.
+        if (!validUser.getRole().equals("ADMIN"))
+            throw new UnauthorizedAccessException("Only admin can view a task");
+
+        String adminId = validUser.getUserId();
+
+        // Determine the company from the authenticated admin.
+        // The company is never trusted from the request.
+        String companyId = this.getUserCompanyId(
+                adminId,
+                "User does not belong to a company");
+
+        return taskRepository.getAllTasksByMe(adminId);
+
+    }
 }

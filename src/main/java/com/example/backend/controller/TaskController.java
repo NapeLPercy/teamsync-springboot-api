@@ -54,6 +54,17 @@ public class TaskController {
         ));
     }
 
+    @GetMapping("/my")
+    public ResponseEntity<?> findAllTasksByMe(@AuthenticationPrincipal AuthenticatedUser validUser) {
+        List<TaskResponse> tasks = taskService.getAllTasksByMe(validUser);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
+                "message", "Successfully fetched all tasks assigned by you",
+                "success", true,
+                "tasks", tasks));
+
+    }
+
     /**
      * @PutMapping("/{id}/status")
      * public String update(@PathVariable("id") String taskId, @RequestBody Task

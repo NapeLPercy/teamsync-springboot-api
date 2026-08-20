@@ -70,4 +70,25 @@ public class TaskRepository {
                 .list();
     }
 
+    public List<TaskResponse> getAllTasksByMe(String userId) {
+        return jdbcClient
+                .sql("""
+                        SELECT
+                            t.id,
+                            t.title,
+                            t.description,
+                            t.status::text AS status,
+                            t.priority::text AS priority,
+                            t.due_date AS dueDate,
+                            t.created_at AS createdAt
+                        FROM task t
+                        INNER JOIN project p
+                            ON p.id = t.project_id
+                        WHERE p.assigned_by = :assigned_by
+                        """)
+                .param("assigned_by", userId)
+                .query(TaskResponse.class)
+                .list();
+    }
+
 }
