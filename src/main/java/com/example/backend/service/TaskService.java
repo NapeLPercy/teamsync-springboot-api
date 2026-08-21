@@ -50,10 +50,18 @@ public class TaskService {
         if (!validUser.getRole().equals("ADMIN"))
             throw new UnauthorizedAccessException("Only admin can add a task");
 
+        // validate task date
+        LocalDate projectDueDate = projectRepository
+                .getProjectDueDate(taskReq.projectId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Project due date not found"));
+        if (taskReq.dueDate().isAfter(projectDueDate)) {
+            throw new InvalidResourceException("Task due date cannot come after project due date");
+        }
+
         String adminId = validUser.getUserId();
 
         // Determine the company from the authenticated admin.
-        // The company is never trusted from the request.
         String companyId = this.getUserCompanyId(
                 adminId,
                 "User does not belong to a company");
@@ -79,15 +87,6 @@ public class TaskService {
 
         String taskId = UUID.randomUUID().toString();
 
-        // VALID TASK DATE
-        LocalDate projectDueDate = projectRepository
-                .getProjectDueDate(taskReq.projectId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Project due date not found"));
-
-        if (taskReq.dueDate().isAfter(projectDueDate)) {
-            throw new InvalidResourceException("Task due date cannot come after project due date");
-        }
         Task task = new Task(
                 taskId,
                 taskReq.title(),

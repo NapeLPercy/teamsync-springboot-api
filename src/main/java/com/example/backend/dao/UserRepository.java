@@ -32,6 +32,7 @@ public class UserRepository {
                 .query(String.class)
                 .optional();
     }
+    
 
     public List<Employee> getAllEmployees(String companyId) {
         return jdbcClient.sql("""

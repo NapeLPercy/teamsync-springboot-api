@@ -8,15 +8,17 @@ public class Comment {
     private String content;
     private LocalDateTime createdAt;
 
-    private String userId;
+    private String submittedBy;
     private String taskId;
 
-    public Comment(String id, String content) {
+    public Comment(String id, String content, String taskId) {
         this.id = id;
         this.content = content;
+        this.taskId = taskId;
     }
 
-    public Comment() {}
+    public Comment() {
+    }
 
     public String getId() {
         return id;
@@ -42,12 +44,12 @@ public class Comment {
         this.createdAt = createdAt;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getSubmittedBy() {
+        return submittedBy;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setSubmittedBy(String submittedBy) {
+        this.submittedBy = submittedBy;
     }
 
     public String getTaskId() {

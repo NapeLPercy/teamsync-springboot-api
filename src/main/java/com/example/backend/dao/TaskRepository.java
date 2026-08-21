@@ -91,4 +91,32 @@ public class TaskRepository {
                 .list();
     }
 
+    public Optional<String> getProjectId(String taskId) {
+        return jdbcClient
+                .sql("SELECT project_id FROM task WHERE id =:task_id")
+                .param("task_id", taskId)
+                .query(String.class)
+                .optional();
+    }
+
+    // public boolean taskBelongToCompanyProject(
+    // String taskId,
+    // String companyId) {
+
+    // return jdbcClient
+    // .sql("""
+    // SELECT EXISTS (
+    // SELECT 1
+    // FROM task
+    // WHERE id = :_id
+    // AND company_id = :company_id
+
+    // )
+    // """)
+    // .param("user_id", userId)
+    // .param("company_id", companyId)
+    // .query(Boolean.class)
+    // .single();
+    // }
+
 }
