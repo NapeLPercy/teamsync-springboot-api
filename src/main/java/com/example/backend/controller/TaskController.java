@@ -3,9 +3,11 @@ package com.example.backend.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,6 +65,15 @@ public class TaskController {
                 "success", true,
                 "tasks", tasks));
 
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteTask(@AuthenticationPrincipal AuthenticatedUser validUser,
+            @PathVariable("id") String taskId) {
+        taskService.deleteTask(validUser, taskId);
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body(Map.of("success", true,
+                        "message", "Task successfully deleted"));
     }
 
     /**

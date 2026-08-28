@@ -141,4 +141,37 @@ public class TaskService {
         return taskRepository.getAllTasksByMe(adminId);
 
     }
+
+    // delete a task
+    public void deleteTask(AuthenticatedUser validUser, String taskId) {
+
+        // ensure user is admin
+        if (!validUser.getRole().equals("ADMIN"))
+            throw new UnauthorizedAccessException("Only admin can delete a task");
+
+        String adminId = validUser.getUserId();
+
+        // ensure admin belongs to a company
+        String companyId = this.getUserCompanyId(
+                adminId,
+                "User does not belong to a company");
+
+        // ensure task exists and has a project
+        Optional<String> projectId = taskRepository.getProjectId(taskId);
+
+        if (projectId.isEmpty())
+            throw new ResourceNotFoundException("Task not found");
+
+        // ensure task's project belongs to the admin's company
+        boolean projectBelongsToCompany = projectRepository.projectBelongsToCompany(
+                projectId.get(),
+                companyId);
+
+        if (!projectBelongsToCompany)
+            throw new ResourceNotFoundException(
+                    "Project does not belong to this company");
+
+        // allow delete
+        taskRepository.delete(taskId);
+    }
 }

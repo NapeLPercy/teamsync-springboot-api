@@ -37,8 +37,10 @@ public class TaskRepository {
                 .list();
     }
 
-    public String delete(String id) {
-        return null;
+    public int delete(String taskId) {
+        return jdbcClient.sql("DELETE FROM task WHERE id = :taskId")
+                .param("taskId", taskId)
+                .update();
     }
 
     public String update(String taskId, Task task) {
