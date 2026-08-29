@@ -32,7 +32,6 @@ public class UserRepository {
                 .query(String.class)
                 .optional();
     }
-    
 
     public List<Employee> getAllEmployees(String companyId) {
         return jdbcClient.sql("""
@@ -88,6 +87,13 @@ public class UserRepository {
                 .single();
     }
 
+    // Delete
+    public int deleteEmployee(String employeeId) {
+        return jdbcClient.sql("DELETE FROM users WHERE id =:employeeId")
+                .param("employeeId", employeeId)
+                .update();
+
+    }
     /*
      * public List<User> findAll() {
      * return jdbcClient.sql("SELECT * from users")
@@ -152,14 +158,6 @@ public class UserRepository {
      * return updated == 1 ? "Sucess" : "failure";
      * }
      * 
-     * // Delete
-     * public String delete(String id) {
-     * int deleted = jdbcClient.sql("DELETE FROM users WHERE id =:idx")
-     * .param("idx", id)
-     * .update();
-     * 
-     * return deleted == 1 ? "Successfully deleted" : "Not deleted";
-     * }
      * 
      * // users change password
      * public String changePassword(UserChangePassword ucp) {

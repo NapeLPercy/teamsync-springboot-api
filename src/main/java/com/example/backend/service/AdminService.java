@@ -36,4 +36,23 @@ public class AdminService {
         return userRepository.getAllEmployees(companyId.get());
     }
 
+    public void removeEmployee(AuthenticatedUser validUser, String employeeId) {
+        String role = validUser.getRole();
+        String userId = validUser.getUserId();
+
+        if (!role.equals("ADMIN"))
+            throw new UnauthorizedAccessException("Only admin can delete employee");
+
+        // find admin company
+        Optional<String> companyId = userRepository.getCompanyId(userId);
+        if (companyId.isEmpty())
+            throw new ResourceNotFoundException("Company doesn't exist");
+
+        // use company to find
+        boolean doesUserBelongToCompany = userRepository.userBelongsToCompany(userId, companyId.get());
+        if (!doesUserBelongToCompany)
+            throw new ResourceNotFoundException("User doesn't belong to company");
+
+        userRepository.deleteEmployee(employeeId);
+    }
 }

@@ -7,7 +7,10 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +29,7 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-    //admin views all company employees
+    // admin views all company employees
     @GetMapping("/employees")
     public ResponseEntity<?> findAllEmployees(Authentication authentication) {
 
@@ -39,6 +42,13 @@ public class AdminController {
                 "employees", employees));
     }
 
-    
-    
+    @DeleteMapping("/employee/{id}")
+    public ResponseEntity<?> deleteEmployee(@AuthenticationPrincipal AuthenticatedUser validUser,
+            @PathVariable("id") String employeeId) {
+        adminService.removeEmployee(validUser, employeeId);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
+                "success", true,
+                "message", "Employee successfully deleted"));
+    }
+
 }
