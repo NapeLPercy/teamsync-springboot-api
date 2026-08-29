@@ -3,6 +3,7 @@ package com.example.backend.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -76,16 +77,15 @@ public class ProjectController {
                 "message", "Successfully fetched company projects"));
     }
 
-    @DeleteMapping("/admin/delete/{id}")
-    public ResponseEntity<?> delete(Authentication authentication, @PathVariable("id") String projectId) {
-        AuthenticatedUser loggedUser = (AuthenticatedUser) authentication.getPrincipal();
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@AuthenticationPrincipal AuthenticatedUser validUser,
+            @PathVariable("id") String projectId) {
 
-        String deletedId = projectService.deleteProject(loggedUser.getUserId(), loggedUser.getRole(), projectId);
+        projectService.deleteProject(validUser, projectId);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
                 "success", true,
-                "data", deletedId,
-                "message", "Successfully deleted company projects"));
+                "message", "Successfully deleted company project"));
     }
 
     /*

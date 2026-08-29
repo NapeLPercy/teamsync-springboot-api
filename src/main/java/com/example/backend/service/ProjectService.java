@@ -90,20 +90,27 @@ public class ProjectService {
             throw new UnauthorizedAccessException("Only admin can get project details");
 
         String companyId = this.getCompanyId(userId, "Company not found");
-        
+
         return projectRepository.fetchProjectsDetails(companyId);
     }
 
-    // delete projects
-    public String deleteProject(String userId, String role, String projectId) {
+    // delete project
+    public void deleteProject(AuthenticatedUser validUser, String projectId) {
 
-        if (!role.equals(("ADMIN"))) {
-            throw new UnauthorizedAccessException("You are not allowed to delete any company projects");
+        if (!validUser.getRole().equals(("ADMIN"))) {
+            throw new UnauthorizedAccessException("Only admin is allowed to delete company project");
         }
 
+        String userId = validUser.getUserId();
+        // ensure belonsg to a company
         String companyId = this.getCompanyId(userId, "You are not allowed to delete projects for this company");
 
-        projectRepository.delete(projectId, companyId);
-        return projectId;
+        // ensure user and project belongs to company
+        boolean projectBelongsToCompany = projectRepository.projectBelongsToCompany(projectId, companyId);
+        if (!projectBelongsToCompany)
+            throw new ResourceNotFoundException(
+                    "Project does not belong to this company");
+
+        projectRepository.deleteProject(projectId);
     }
 }

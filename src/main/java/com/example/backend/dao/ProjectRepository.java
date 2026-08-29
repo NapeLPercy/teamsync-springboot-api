@@ -62,11 +62,10 @@ public class ProjectRepository {
                                 .optional();
         }
 
-        public int delete(String projectId, String companyId) {
+        public int deleteProject(String projectId) {
                 return jdbcClient
-                                .sql("DELETE FROM project WHERE id = :project_id AND company_id = :company_id")
-                                .param("project_id", projectId)
-                                .param("company_id", companyId)
+                                .sql("DELETE FROM project WHERE id = :projectId")
+                                .param("projectId", projectId)
                                 .update();
         }
 
@@ -90,9 +89,6 @@ public class ProjectRepository {
                                 .single();
         }
 
-
-
-        
         /*
          * public Optional<Project> findById(String id) {
          * return jdbcClient
