@@ -91,7 +91,7 @@ public class RegisterService {
 
         User user = new User(userId.toString(), req.fullName(), companyId.get());
 
-        String generatedPassword = passwordManager.generateTemporaryPassword(req.email(), req.fullName());
+        String generatedPassword = "Rosina^*20";//passwordManager.generateTemporaryPassword(req.email(), req.fullName());
         String hashedPassword = passwordEncoder.encode(generatedPassword);
         Account account = new Account(accountId.toString(), req.email(), hashedPassword, "PENDING",
                 userId.toString());

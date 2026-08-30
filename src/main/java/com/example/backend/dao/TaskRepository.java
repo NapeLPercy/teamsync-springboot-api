@@ -93,6 +93,25 @@ public class TaskRepository {
                 .list();
     }
 
+    public List<TaskResponse> getAllTasksForMe(String employeeId) {
+        return jdbcClient
+                .sql("""
+                        SELECT
+                            t.id,
+                            t.title,
+                            t.description,
+                            t.status::text AS status,
+                            t.priority::text AS priority,
+                            t.due_date AS dueDate,
+                            t.created_at AS createdAt
+                        FROM task t
+                        WHERE t.assigned_to = :assigned_to
+                        """)
+                .param("assigned_to", employeeId)
+                .query(TaskResponse.class)
+                .list();
+    }
+
     public Optional<String> getProjectId(String taskId) {
         return jdbcClient
                 .sql("SELECT project_id FROM task WHERE id =:task_id")

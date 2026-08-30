@@ -35,11 +35,31 @@ public class ProjectRepository {
                                 .list();
         }
 
-        // fetch all projects i created
+        // fetch all projects admin created
         public List<Project> fetchAllProjectsCreatedByMe(String adminId) {
                 return jdbcClient.sql(
                                 "SELECT id,name,description,category, due_date, created_at, assigned_by AS userId FROM project WHERE assigned_by =:assigned_by")
                                 .param("assigned_by", adminId)
+                                .query(Project.class)
+                                .list();
+        }
+
+        // fetch all projects i created
+        public List<Project> fetchAllProjectsCreatedForMe(String employeeId) {
+                return jdbcClient.sql("""
+                                SELECT DISTINCT
+                                    p.id,
+                                    p.name,
+                                    p.description,
+                                    p.category,
+                                    p.due_date,
+                                    p.created_at,
+                                    t.assigned_to AS userId
+                                FROM project p
+                                JOIN task t ON t.project_id = p.id
+                                WHERE t.assigned_to = :employeeId
+                                """)
+                                .param("employeeId", employeeId)
                                 .query(Project.class)
                                 .list();
         }

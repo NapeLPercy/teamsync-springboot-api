@@ -26,62 +26,73 @@ import com.example.backend.service.TaskService;
 @RequestMapping("api/tasks")
 @RestController
 public class TaskController {
-    private final TaskService taskService;
+        private final TaskService taskService;
 
-    public TaskController(TaskService taskService) {
-        this.taskService = taskService;
-    }
+        public TaskController(TaskService taskService) {
+                this.taskService = taskService;
+        }
 
-    @PostMapping("/")
-    public ResponseEntity<?> createTask(@AuthenticationPrincipal AuthenticatedUser authUser,
-            @RequestBody TaskRequest taskReq) {
+        @PostMapping("/")
+        public ResponseEntity<?> createTask(@AuthenticationPrincipal AuthenticatedUser authUser,
+                        @RequestBody TaskRequest taskReq) {
 
-        String taskId = taskService.addTask(taskReq, authUser);
+                String taskId = taskService.addTask(taskReq, authUser);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(Map.of("success", true,
-                        "taskId", taskId,
-                        "message", "successfully added a task"));
-    }
+                return ResponseEntity.status(HttpStatus.ACCEPTED)
+                                .body(Map.of("success", true,
+                                                "taskId", taskId,
+                                                "message", "successfully added a task"));
+        }
 
-    @GetMapping("/")
-    public ResponseEntity<?> findAllTasks(@AuthenticationPrincipal AuthenticatedUser validUser) {
-        List<TaskResponse> tasks = taskService.getAllTasks(validUser);
+        @GetMapping("/")
+        public ResponseEntity<?> findAllTasks(@AuthenticationPrincipal AuthenticatedUser validUser) {
+                List<TaskResponse> tasks = taskService.getAllTasks(validUser);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
-                "success", true,
-                "message", "successfuly fetched all tasks",
-                "tasks", tasks
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
+                                "success", true,
+                                "message", "successfuly fetched all tasks",
+                                "tasks", tasks
 
-        ));
-    }
+                ));
+        }
 
-    @GetMapping("/my")
-    public ResponseEntity<?> findAllTasksByMe(@AuthenticationPrincipal AuthenticatedUser validUser) {
-        List<TaskResponse> tasks = taskService.getAllTasksByMe(validUser);
+        @GetMapping("/my")
+        public ResponseEntity<?> findAllTasksByMe(@AuthenticationPrincipal AuthenticatedUser validUser) {
+                List<TaskResponse> tasks = taskService.getAllTasksByMe(validUser);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
-                "message", "Successfully fetched all tasks assigned by you",
-                "success", true,
-                "tasks", tasks));
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
+                                "message", "Successfully fetched all tasks assigned by you",
+                                "success", true,
+                                "tasks", tasks));
 
-    }
+        }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTask(@AuthenticationPrincipal AuthenticatedUser validUser,
-            @PathVariable("id") String taskId) {
-        taskService.deleteTask(validUser, taskId);
-        return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(Map.of("success", true,
-                        "message", "Task successfully deleted"));
-    }
+        @GetMapping("/for_me")
+        public ResponseEntity<?> findAllTasksForMe(@AuthenticationPrincipal AuthenticatedUser validUser) {
+                List<TaskResponse> tasks = taskService.getAllTasksForMe(validUser);
 
-    /**
-     * @PutMapping("/{id}/status")
-     * public String update(@PathVariable("id") String taskId, @RequestBody Task
-     * task) {
-     * return taskRepository.update(taskId, task);
-     * }
-     */
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
+                                "message", "Successfully fetched all tasks assigned to you",
+                                "success", true,
+                                "tasks", tasks));
+
+        }
+
+        @DeleteMapping("/{id}")
+        public ResponseEntity<?> deleteTask(@AuthenticationPrincipal AuthenticatedUser validUser,
+                        @PathVariable("id") String taskId) {
+                taskService.deleteTask(validUser, taskId);
+                return ResponseEntity.status(HttpStatus.ACCEPTED)
+                                .body(Map.of("success", true,
+                                                "message", "Task successfully deleted"));
+        }
+
+        /**
+         * @PutMapping("/{id}/status")
+         * public String update(@PathVariable("id") String taskId, @RequestBody Task
+         * task) {
+         * return taskRepository.update(taskId, task);
+         * }
+         */
 
 }

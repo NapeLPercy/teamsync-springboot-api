@@ -123,7 +123,7 @@ public class TaskService {
 
     }
 
-    // get all tasks by me
+    // get all tasks by ADMIN
     public List<TaskResponse> getAllTasksByMe(AuthenticatedUser validUser) {
 
         // Only admins are allowed to view tasks.
@@ -139,7 +139,24 @@ public class TaskService {
                 "User does not belong to a company");
 
         return taskRepository.getAllTasksByMe(adminId);
+    }
 
+    // get all tasks by Employee
+    public List<TaskResponse> getAllTasksForMe(AuthenticatedUser validUser) {
+
+        // Only admins are allowed to view tasks.
+        if (!validUser.getRole().equals("EMPLOYEE"))
+            throw new UnauthorizedAccessException("Only employees allowed");
+
+        String employeeId = validUser.getUserId();
+
+        // Determine the company from the authenticated admin.
+        // The company is never trusted from the request.
+        String companyId = this.getUserCompanyId(
+                employeeId,
+                "User does not belong to a company");
+
+        return taskRepository.getAllTasksForMe(employeeId);
     }
 
     // delete a task
