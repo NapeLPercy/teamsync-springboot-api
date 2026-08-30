@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dao.ProjectDetailsResponse;
 import com.example.backend.dto.ProjectRequest;
-import com.example.backend.dto.UserResponse;
 import com.example.backend.model.AuthenticatedUser;
 import com.example.backend.model.Project;
 import com.example.backend.service.ProjectService;
@@ -67,9 +66,21 @@ public class ProjectController {
 
     // get all projects
     @GetMapping("/my")
-    public ResponseEntity<?> findAllMyProjects(Authentication authentication) {
+    public ResponseEntity<?> findProjectsCreatedByMe(Authentication authentication) {
         AuthenticatedUser validUser = (AuthenticatedUser) authentication.getPrincipal();// get data from context
         List<Project> projects = projectService.viewAllProjectsCreatedByMe(validUser);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
+                "success", true,
+                "projects", projects,
+                "message", "Successfully fetched company projects"));
+    }
+
+    // get all projects
+    @GetMapping("/for_me")
+    public ResponseEntity<?> findProjectsCreatedForMe(Authentication authentication) {
+        AuthenticatedUser validUser = (AuthenticatedUser) authentication.getPrincipal();// get data from context
+        List<Project> projects = projectService.viewAllProjectsCreatedForMe(validUser);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
                 "success", true,

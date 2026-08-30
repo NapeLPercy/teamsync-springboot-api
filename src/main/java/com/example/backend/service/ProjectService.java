@@ -74,11 +74,21 @@ public class ProjectService {
     // view all projects created by me
     public List<Project> viewAllProjectsCreatedByMe(AuthenticatedUser validUser) {
         if (!validUser.getRole().equals(("ADMIN"))) {
-            throw new UnauthorizedAccessException("Only admin can view all company ");
+            throw new UnauthorizedAccessException("Only admin can view all company projects");
         }
         String adminId = validUser.getUserId();
         getCompanyId(adminId, "Company not found");
         return projectRepository.fetchAllProjectsCreatedByMe(adminId);
+    };
+
+    // projects an employee is a part of
+    public List<Project> viewAllProjectsCreatedForMe(AuthenticatedUser validUser) {
+        if (!validUser.getRole().equals(("EMPLOYEE"))) {
+            throw new UnauthorizedAccessException("Only employees allowed");
+        }
+        String employeeId = validUser.getUserId();
+        getCompanyId(employeeId, "Company not found");
+        return projectRepository.fetchAllProjectsCreatedForMe(employeeId);
     };
 
     // get all projects details
